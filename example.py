@@ -31,7 +31,7 @@ Quick example.
 
 import json  # Imported for formatting
 
-from etcdobj import EtcdObj, fields
+from etcdobj import EtcdObj, Server, fields
 
 
 class Example(EtcdObj):
@@ -79,3 +79,10 @@ print json.dumps(e.render(), indent=2)
 #     'key': '/example/aunicode'
 #   }
 # ]
+
+# Saving to etcd
+server = Server()
+server.save(e)
+
+# Retrieving from etcd
+from_etcd = server.get(Example())

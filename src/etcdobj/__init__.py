@@ -29,10 +29,45 @@
 A simplistic etcd orm.
 """
 
+import etcd
+
 from etcdobj.fields import Field
 
 
 __version__ = '0.0.0'
+
+
+class Server(object):
+
+    def __init__(self, etcd_kwargs={}):
+        self.etcd_client = etcd.Client(**etcd_kwargs)
+
+    def save(self, obj):
+        """
+        Save an object.
+
+        :param obj: An instance that subclasses EtcdObj
+        :type obj: EtcdObj
+        :returns: The same instance
+        :rtype: EtcdObj
+        """
+        for item in obj.render():
+            self.etcd_client.write(item['key'], item['value'])
+        return obj
+
+    def get(self, obj):
+        """
+        Retrieve an object.
+
+        :param obj: An instance that subclasses EtcdObj
+        :type obj: EtcdObj
+        :returns: A filled out instance
+        :rtype: EtcdObj
+        """
+        for item in obj.render():
+            value = self.etcd_client.get(item['key']).value
+            setattr(obj, item['key'].split('/')[-1], value)
+        return obj
 
 
 class EtcdObj(object):
