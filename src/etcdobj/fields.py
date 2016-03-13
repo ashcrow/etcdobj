@@ -48,7 +48,12 @@ class Field(object):
         self._value = value
 
     def render(self):
-        return {'key': self.name, 'value': self._value}
+        return {
+            'name': self.name,
+            'key': self.name,
+            'value': self._value,
+            'dir': False,
+        }
 
 
 class _CastField(Field):
@@ -72,6 +77,10 @@ class UnicodeField(_CastField):
 
 class DictField(Field):
 
+    def __init__(self, *args, **kwargs):
+        super(DictField, self).__init__(*args, **kwargs)
+        self._value = {}
+
     def _set_value(self, value):
         if type(value) != dict:
             raise TypeError('Must use dict')
@@ -81,6 +90,9 @@ class DictField(Field):
         rendered = []
         for x in self._value.keys():
             rendered.append({
+                'name': self.name,
                 'key': '{0}/{1}'.format(self.name, x),
-                'value': self._value[x]})
+                'value': self._value[x],
+                'dir': True,
+            })
         return rendered

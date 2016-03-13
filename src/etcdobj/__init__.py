@@ -65,8 +65,14 @@ class Server(object):
         :rtype: EtcdObj
         """
         for item in obj.render():
-            value = self.etcd_client.get(item['key']).value
-            setattr(obj, item['key'].split('/')[-1], value)
+            etcd_resp = self.etcd_client.get(item['key'])
+            value = etcd_resp.value
+            if item['dir']:
+                key = item['key'].split('/')[-1]
+                dct = getattr(obj, item['name'])
+                dct[key] = value
+            else:
+                setattr(obj, item['name'], value)
         return obj
 
 
