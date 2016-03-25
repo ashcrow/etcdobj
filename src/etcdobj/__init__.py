@@ -29,18 +29,49 @@
 A simplistic etcd orm.
 """
 
-import etcd
-
 from etcdobj.fields import Field
-
 
 __version__ = '0.0.0'
 
 
-class Server(object):
+class _Server(object):
+    """
+    Parent class for all Server implementations.
+    """
 
-    def __init__(self, etcd_kwargs={}):
-        self.etcd_client = etcd.Client(**etcd_kwargs)
+    def __init__(self, client, *args, **kwargs):
+        """
+        Creates a new instance of a Server implementation.
+
+        :param client: The etcd client to use.
+        :type client: object
+        :param args: All other non-keyword arguments.
+        :type args: list
+        :param kwargs: All other keyword arguments.
+        :type kwargs: dict
+        :raises: ValueError
+        """
+        self.client = None
+        self._verify_client(client)
+
+    def _verify_client(self, client):
+        """
+        Does basic validation that the client can be used.
+
+        :param client: The client to check.
+        :type client: object
+        :raises: ValueError
+        """
+        missing = []
+        for method in ('write', 'get', 'delete'):
+            if not callable(getattr(client, method, None)):
+                missing.append(method)
+
+        if missing:
+            raise ValueError('The following methods are missing from the '
+                             'client: {0}'.format(', '.join(missing)))
+
+        self.client = client
 
     def save(self, obj):
         """
@@ -52,7 +83,7 @@ class Server(object):
         :rtype: EtcdObj
         """
         for item in obj.render():
-            self.etcd_client.write(item['key'], item['value'])
+            self.client.write(item['key'], item['value'])
         return obj
 
     def get(self, obj):
@@ -65,7 +96,7 @@ class Server(object):
         :rtype: EtcdObj
         """
         for item in obj.render():
-            etcd_resp = self.etcd_client.get(item['key'])
+            etcd_resp = self.client.get(item['key'])
             value = etcd_resp.value
             if item['dir']:
                 key = item['key'].split('/')[-1]
@@ -74,6 +105,29 @@ class Server(object):
             else:
                 setattr(obj, item['name'], value)
         return obj
+
+
+class Server(_Server):
+    """
+    Server implementation which creates an etcd.Client instance
+    as its client.
+    """
+
+    def __init__(self, etcd_kwargs={}, *args, **kwargs):
+        """
+        Creates a new instance of Server.
+
+        :param etcd_kwargs: The keyword arguments used to create an etcd.Client
+        :type client: dict
+        :param args: All other non-keyword arguments.
+        :type args: list
+        :param kwargs: All other keyword arguments.
+        :type kwargs: dict
+        :raises: ValueError
+        """
+        import etcd
+        super(Server, self).__init__(
+            etcd.Client(**etcd_kwargs), *args, **kwargs)
 
 
 class EtcdObj(object):
