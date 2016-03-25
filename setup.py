@@ -32,11 +32,13 @@ Python setup script.
 """
 
 from setuptools import setup, find_packages
-from pip.req import parse_requirements
 
+def extract_requirements(filename):
+    with open(filename, 'r') as requirements_file:
+        return [x[:-1] for x in requirements_file.readlines()]
 
-install_requires = [x.name for x in parse_requirements('requirements.txt')]
-test_require = [x.name for x in parse_requirements('test-requirements.txt')]
+install_requires = extract_requirements('requirements.txt')
+test_require = extract_requirements('test-requirements.txt')
 
 
 setup(
