@@ -71,10 +71,6 @@ class StrField(_CastField):
     _caster = str
 
 
-class UnicodeField(_CastField):
-    _caster = unicode
-
-
 class DictField(Field):
 
     def __init__(self, *args, **kwargs):

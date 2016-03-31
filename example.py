@@ -43,7 +43,6 @@ class Example(EtcdObj):
     # Fields all take a name that will be used as their key
     anint = fields.IntField('anint')
     astr = fields.StrField('astr')
-    aunicode = fields.UnicodeField('aunicode')
     adict = fields.DictField('adict')
 
 
@@ -52,10 +51,9 @@ e = Example(adict={'test': 'value', 'second': 'one'})
 # Or set/updated via direct set
 e.anint = '10'
 e.astr = 200
-e.aunicode = 300
 
 # Render shows a list of the etcd key and the value
-print json.dumps(e.render(), indent=2)
+print(json.dumps(e.render(), indent=2))
 # Output:
 # [
 #   {
@@ -74,10 +72,6 @@ print json.dumps(e.render(), indent=2)
 #     'value': '200',
 #     'key': '/example/astr'
 #   },
-#   {
-#     'value': '300',
-#     'key': '/example/aunicode'
-#   }
 # ]
 
 # Saving to etcd

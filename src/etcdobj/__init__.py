@@ -135,7 +135,7 @@ class EtcdObj(object):
     _fields = []
 
     def __new__(cls, **kwargs):
-        cls = super(EtcdObj, cls).__new__(cls, **kwargs)
+        cls = super(EtcdObj, cls).__new__(cls)
         for key in dir(cls):
             if not key.startswith('_'):
                 attr = getattr(cls, key)
