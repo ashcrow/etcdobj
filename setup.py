@@ -33,6 +33,7 @@ Python setup script.
 
 from setuptools import setup, find_packages
 
+
 def extract_requirements(filename):
     with open(filename, 'r') as requirements_file:
         return [x[:-1] for x in requirements_file.readlines()]

@@ -1,5 +1,5 @@
 nose
-pep8
+flake8
 coverage
 mock
 python-etcd==0.4.2
