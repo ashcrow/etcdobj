@@ -31,23 +31,56 @@ All fields.
 
 
 class Field(object):
+    """
+    Base class for all fields.
+    """
 
     def __init__(self, name):
+        """
+        Initializes a new Field instance.
+
+        :param name: The name of the field
+        :type name: str
+        """
         self.name = name
         self._value = None
 
     @property
     def value(self):
+        """
+        Returns the value of the field.
+
+        :returns: The value of the field
+        :rtype: mixed
+        """
         return self._value
 
     @value.setter
     def value(self, value):
+        """
+        Sets the field value.
+
+        :param value: The value to use.
+        :type value: mixed
+        """
         self._set_value(value)
 
     def _set_value(self, value):
+        """
+        Internal method that sets the field value.
+
+        :param value: The value to use.
+        :type value: mixed
+        """
         self._value = value
 
     def render(self):
+        """
+        Renders the field into a structure that can be persisted to etcd.
+
+        :returns: A structure to be used with etcd
+        :rtype: dict
+        """
         return {
             'name': self.name,
             'key': self.name,
@@ -57,32 +90,71 @@ class Field(object):
 
 
 class _CastField(Field):
+    """
+    Base class for all Fields which force specific types.
+    """
     _caster = None
 
     def _set_value(self, value):
+        """
+        Internal method that sets the field value.
+
+        :param value: The value to use.
+        :type value: mixed
+        """
         self._value = self._caster(value)
 
 
 class IntField(_CastField):
+    """
+    A Field that forces a cast to an int.
+    """
     _caster = int
 
 
 class StrField(_CastField):
+    """
+    A Field that forces a cast to a str.
+    """
     _caster = str
 
 
 class DictField(Field):
+    """
+    A Field that only accepts dicts.
+    """
 
     def __init__(self, *args, **kwargs):
+        """
+        Initializes an instance of DictField.
+
+        :param args: All non-keyword arguments.
+        :type args: list
+        :param kwargs: All keyword arguments.
+        :type kwargs: dict
+        """
         super(DictField, self).__init__(*args, **kwargs)
         self._value = {}
 
     def _set_value(self, value):
+        """
+        Internal method that sets the field value.
+
+        :param value: The value to use.
+        :type value: dict
+        :raises: TypeError
+        """
         if type(value) != dict:
             raise TypeError('Must use dict')
         super(DictField, self)._set_value(value)
 
     def render(self):
+        """
+        Renders the field into a structure that can be persisted to etcd.
+
+        :returns: A list of structures to be used with etcd
+        :rtype: list
+        """
         rendered = []
         for x in self._value.keys():
             rendered.append({

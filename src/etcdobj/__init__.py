@@ -131,10 +131,21 @@ class Server(_Server):
 
 
 class EtcdObj(object):
+    """
+    Class all objects which want to persist to etcd must subclass.
+    """
 
     _fields = []
 
     def __new__(cls, **kwargs):
+        """
+        Creates a new instance.
+
+        :param kwargs: All keyword arguments.
+        :type kwargs: dict
+        :returns: The new instance
+        :rtype: EtcdObj
+        """
         cls = super(EtcdObj, cls).__new__(cls)
         for key in dir(cls):
             if not key.startswith('_'):
@@ -147,7 +158,10 @@ class EtcdObj(object):
 
     def __init__(self, **kwargs):
         """
-        Creates a new instance. Required for __new__.
+        Initializes a new instance. Required for __new__.
+
+        :param kwargs: All keyword arguments.
+        :type kwargs: dict
         """
         pass
 
