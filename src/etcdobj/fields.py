@@ -89,7 +89,7 @@ class Field(object):
         }
 
 
-class _CastField(Field):
+class _CastField(Field):  # pragma: no cover
     """
     Base class for all Fields which force specific types.
     """
@@ -124,16 +124,19 @@ class DictField(Field):
     A Field that only accepts dicts.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, name, caster={}, *args, **kwargs):
         """
         Initializes an instance of DictField.
 
         :param args: All non-keyword arguments.
         :type args: list
+        :param caster: A caster structure for casting dictionary items.
+        :type caster: dict
         :param kwargs: All keyword arguments.
         :type kwargs: dict
         """
-        super(DictField, self).__init__(*args, **kwargs)
+        super(DictField, self).__init__(name, *args, **kwargs)
+        self._caster = caster
         self._value = {}
 
     def _set_value(self, value):
@@ -145,7 +148,15 @@ class DictField(Field):
         :raises: TypeError
         """
         if type(value) != dict:
-            raise TypeError('Must use dict')
+            raise TypeError('Must use dict. Provided: {0}'.format(type(value)))
+
+        # Force casting if we were given a caster.
+        if self._caster:
+            for x in value.keys():
+                caster = self._caster.get(x, None)
+                if callable(caster):
+                    value[x] = caster(value[x])
+
         super(DictField, self)._set_value(value)
 
     def render(self):

@@ -156,7 +156,7 @@ class EtcdObj(object):
                         attr.value = kwargs[key]
         return cls
 
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs):  # pragma: no cover
         """
         Initializes a new instance. Required for __new__.
 
