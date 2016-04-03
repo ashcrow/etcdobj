@@ -29,6 +29,8 @@
 All fields.
 """
 
+import json
+
 
 class Field(object):
     """
@@ -44,6 +46,16 @@ class Field(object):
         """
         self.name = name
         self._value = None
+
+    @property
+    def json(self):
+        """
+        Returns a json version of the field.
+
+        :returns: JSON representation.
+        :rtype: str
+        """
+        return json.dumps({self.name: self._value})
 
     @property
     def value(self):
@@ -138,6 +150,20 @@ class DictField(Field):
         super(DictField, self).__init__(name, *args, **kwargs)
         self._caster = caster
         self._value = {}
+
+    @property
+    def json(self):
+        """
+        Returns a json version of the field.
+
+        .. note::
+
+           DictField serializes the dictionary without the name.
+
+        :returns: JSON representation.
+        :rtype: str
+        """
+        return json.dumps(self._value)
 
     def _set_value(self, value):
         """
