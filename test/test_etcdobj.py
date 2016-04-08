@@ -61,16 +61,16 @@ class Test_Server(TestCase):
         # We should have one write
         self.client.write.assert_called_once_with('/testing/anint', 10)
 
-    def test_get(self):
+    def test_read(self):
         """
-        Verify get works as expected.
+        Verify read works as expected.
         """
         server = etcdobj._Server(self.client)
-        self.client.get.return_value = MagicMock(value="10")
+        self.client.read.return_value = MagicMock(value="10")
 
         # Create the object with different data
-        to = server.get(TestingObj(anint=1))
-        # We should have one get
-        self.client.get.assert_called_once_with('/testing/anint')
+        to = server.read(TestingObj(anint=1))
+        # We should have one read
+        self.client.read.assert_called_once_with('/testing/anint')
         # And it should have set the data to 10
         self.assertEquals(10, to.anint)

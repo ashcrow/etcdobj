@@ -63,7 +63,7 @@ class _Server(object):
         :raises: ValueError
         """
         missing = []
-        for method in ('write', 'get', 'delete'):
+        for method in ('write', 'read', 'delete'):
             if not callable(getattr(client, method, None)):
                 missing.append(method)
 
@@ -86,7 +86,7 @@ class _Server(object):
             self.client.write(item['key'], item['value'])
         return obj
 
-    def get(self, obj):
+    def read(self, obj):
         """
         Retrieve an object.
 
@@ -96,7 +96,7 @@ class _Server(object):
         :rtype: EtcdObj
         """
         for item in obj.render():
-            etcd_resp = self.client.get(item['key'])
+            etcd_resp = self.client.read(item['key'])
             value = etcd_resp.value
             if item['dir']:
                 key = item['key'].split('/')[-1]
