@@ -53,30 +53,68 @@ e.anint = '10'
 e.astr = 200
 
 # Render shows a list of the etcd key and the value
+print("Original rendering of Example")
 print(json.dumps(e.render(), indent=2))
 # Output:
 # [
 #   {
-#     'value': 'value',
-#     'key': '/example/adict/test'
+#     "value": "value",
+#     "dir": true,
+#     "name": "adict",
+#     "key": "/example/adict/test"
 #   },
 #   {
 #     "value": "one",
+#     "dir": true,
+#     "name": "adict",
 #     "key": "/example/adict/second"
 #   },
 #   {
-#     'value': 10,
-#     'key': '/example/anint'
+#     "value": 10,
+#     "dir": false,
+#     "name": "anint",
+#     "key": "/example/anint"
 #   },
 #   {
-#     'value': '200',
-#     'key': '/example/astr'
-#   },
+#     "value": "200",
+#     "dir": false,
+#     "name": "astr",
+#     "key": "/example/astr"
+#   }
 # ]
 
 # Saving to etcd
-server = Server()
+server = Server(etcd_kwargs={'port': 2379})
 server.save(e)
 
 # Retrieving from etcd
-from_etcd = server.get(Example())
+from_etcd = server.read(Example())
+print("Result read back from etcd")
+print(json.dumps(from_etcd.render(), indent=2))
+# Output:
+# [
+#   {
+#     "value": "value",
+#     "dir": true,
+#     "name": "adict",
+#     "key": "/example/adict/test"
+#   },
+#   {
+#     "value": "one",
+#     "dir": true,
+#     "name": "adict",
+#     "key": "/example/adict/second"
+#   },
+#   {
+#     "value": 10,
+#     "dir": false,
+#     "name": "anint",
+#     "key": "/example/anint"
+#   },
+#   {
+#     "value": "200",
+#     "dir": false,
+#     "name": "astr",
+#     "key": "/example/astr"
+#   }
+# ]
