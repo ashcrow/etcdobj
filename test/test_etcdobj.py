@@ -59,7 +59,8 @@ class Test_Server(TestCase):
         server = etcdobj._Server(self.client)
         server.save(self.testing_obj)
         # We should have one write
-        self.client.write.assert_called_once_with('/testing/anint', 10)
+        self.client.write.assert_called_once_with(
+            '/testing/anint', 10, quorum=True)
 
     def test_read(self):
         """
@@ -71,6 +72,7 @@ class Test_Server(TestCase):
         # Create the object with different data
         to = server.read(TestingObj(anint=1))
         # We should have one read
-        self.client.read.assert_called_once_with('/testing/anint')
+        self.client.read.assert_called_once_with(
+            '/testing/anint', quorum=True)
         # And it should have set the data to 10
         self.assertEquals(10, to.anint)

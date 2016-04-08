@@ -83,7 +83,7 @@ class _Server(object):
         :rtype: EtcdObj
         """
         for item in obj.render():
-            self.client.write(item['key'], item['value'])
+            self.client.write(item['key'], item['value'], quorum=True)
         return obj
 
     def read(self, obj):
@@ -96,7 +96,7 @@ class _Server(object):
         :rtype: EtcdObj
         """
         for item in obj.render():
-            etcd_resp = self.client.read(item['key'])
+            etcd_resp = self.client.read(item['key'], quorum=True)
             value = etcd_resp.value
             if item['dir']:
                 key = item['key'].split('/')[-1]
