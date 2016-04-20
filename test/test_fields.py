@@ -28,6 +28,7 @@
 """
 Unittests for fields.
 """
+import datetime
 
 from mock import MagicMock
 
@@ -146,3 +147,30 @@ class TestDictField(TestCase):
         # Test internal casting when a caster is provided
         self.instance.value = {'a': '10', 'b': 10}
         self.assertEquals({'a': 10, 'b': '10'}, self.instance.value)
+
+
+class TestDateTimeField(TestCase):
+    """
+    Tests for DateTimeField.
+    """
+
+    def setUp(self):
+        """
+        Executes before each test.
+        """
+        self.instance = fields.DateTimeField('test', '%Y-%m-%d')
+
+    def test_casting(self):
+        """
+        Verify DateTimeField casts properly.
+        """
+        # We must have a dict
+        self.assertRaises(
+            TypeError,
+            self.instance.value,
+            "error"
+        )
+
+        # Test internal casting when a caster is provided
+        self.instance.value = '2016-01-01'
+        self.assertEquals(datetime.datetime(2016, 1, 1), self.instance.value)

@@ -29,6 +29,7 @@
 All fields.
 """
 
+import datetime
 import json
 
 
@@ -129,6 +130,67 @@ class StrField(_CastField):
     A Field that forces a cast to a str.
     """
     _caster = str
+
+
+class DateTimeField(Field):
+    """
+    A Field that forces a cast to a datetime.datetime instance.
+    """
+
+    def __init__(self, name, datefmt, *args, **kwargs):
+        """
+        Initializes an instance of DateTimeField.
+
+        :param name: The name of the field
+        :type name: str
+        :param datefmt: The datetime format to parse to/from.
+        :type datefmt: str
+        :param args: All non-keyword arguments.
+        :type args: list
+        :param kwargs: All keyword arguments.
+        :type kwargs: dict
+        """
+        super(DateTimeField, self).__init__(name, *args, **kwargs)
+        self._datefmt = datefmt
+
+    def _set_value(self, value):
+        """
+        Internal method that sets the field value.
+
+        :param value: The value to use.
+        :type value: str or datetime.datetime
+        :raises: TypeError
+        """
+        if type(value) is datetime.datetime:
+            self._value = value
+        else:
+            self._value = datetime.datetime.strptime(value, self._datefmt)
+
+    @property
+    def json(self):
+        """
+        Returns a json version of the field.
+
+        :returns: JSON representation.
+        :rtype: str
+        """
+        return json.dumps({
+            self.name: datetime.datetime.strftime(self._value, self._datefmt),
+        })
+
+    def render(self):
+        """
+        Renders the field into a structure that can be persisted to etcd.
+
+        :returns: A structure to be used with etcd
+        :rtype: dict
+        """
+        return {
+            'name': self.name,
+            'key': self.name,
+            'value': datetime.datetime.strftime(self._value, self._datefmt),
+            'dir': False,
+        }
 
 
 class DictField(Field):
