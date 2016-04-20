@@ -29,6 +29,8 @@
 A simplistic etcd orm.
 """
 
+import json
+
 from etcdobj.fields import Field
 
 __version__ = '0.0.0'
@@ -211,3 +213,18 @@ class EtcdObj(object):
                 i['key'] = '/{0}/{1}'.format(self.__name__, i['key'])
                 rendered.append(i)
         return rendered
+
+    @property
+    def json(self):
+        """
+        Dumps the entire object as a json structure.
+        """
+        data = {}
+        for field in self._fields:
+            # FIXME: This is dumb :-)
+            attribute = object.__getattribute__(self, field)
+            data[attribute.name] = json.loads(attribute.json)
+            # Flatten if needed
+            if attribute.name in data[attribute.name].keys():
+                data[attribute.name] = data[attribute.name][attribute.name]
+        return json.dumps(data)
